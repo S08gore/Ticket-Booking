@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BusTicket - RedBus Clone</title>
+  <!-- Tailwind CSS CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <!-- Font Awesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+    }
+    .navbar {
+      background-color: #d84e55;
+    }
+    .hero {
+      background-image: url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80');
+      background-size: cover;
+      background-position: center;
+    }
+    .seat {
+      width: 40px;
+      height: 40px;
+      margin: 5px;
+      border: 1px solid #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .seat.available {
+      background-color: #e0e0e0;
+    }
+    .seat.selected {
+      background-color: #38a169;
+      color: white;
+    }
+    .seat.booked {
+      background-color: #a0a0a0;
+      cursor: not-allowed;
+    }
+    .auth-form {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .auth-input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .email-input {
+      background-color: #e6f0fa;
+    }
+    .auth-button {
+      width: 100%;
+      padding: 10px;
+      background-color: #d84e55;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .auth-button:hover {
+      background-color: #c03944;
+    }
+    .bus-card, .hotel-card {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar p-4 text-white">
+    <div class="container mx-auto flex justify-between items-center">
+      <a href="#" class="text-2xl font-bold" onclick="showSection('home')">BusTicket</a>
+      <div class="space-x-4">
+        <a href="#" class="hover:underline" onclick="showSection('home')">Bus Tickets</a>
+        <a href="#" class="hover:underline" onclick="showSection('hotels')">Hotels</a>
+        <a href="#" class="hover:underline">Bus Hire</a>
+        <a href="#" class="hover:underline" onclick="showSection('login')">Login</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Home Section -->
+  <section id="home" class="hero py-16">
+    <div class="container mx-auto text-center text-white">
+      <h1 class="text-4xl font-bold mb-4">Book Bus Tickets Online</h1>
+      <p class="text-lg mb-8">Travel with ease across thousands of routes with our trusted bus operators.</p>
+      <!-- Booking Form -->
+      <div class="bg-white p-6 rounded-lg shadow-lg max-w-2xl mx-auto text-gray-800">
+        <form id="bookingForm">
+          <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+            <input type="text" id="source" placeholder="From (e.g., Lucknow)" class="p-2 border rounded w-full" required>
+            <input type="text" id="destination" placeholder="To (e.g., Faizabad)" class="p-2 border rounded w-full" required>
+            <input type="date" id="travelDate" class="p-2 border rounded w-full" required>
+            <button type="submit" class="bg-red-500 text-white p-2 rounded hover:bg-red-600">Search Buses</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bus Results Section -->
+  <section id="busResults" class="container mx-auto py-8 hidden">
+    <h2 class="text-2xl font-bold mb-4">Available Buses</h2>
+    <div id="busList" class="space-y-4">
+      <!-- Bus results will be dynamically added here -->
+    </div>
+  </section>
+
+  <!-- Hotels Section -->
+  <section id="hotels" class="container mx-auto py-16 hidden">
+    <div class="text-center">
+      <h1 class="text-4xl font-bold mb-4">Book Hotels Online</h1>
+      <p class="text-lg mb-8">Find the best hotels for your stay with great deals.</p>
+      <!-- Hotel Search Form -->
+      <div class="bg-white p-6 rounded-lg shadow-lg max-w-2xl mx-auto text-gray-800">
+        <form id="hotelForm">
+          <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+            <input type="text" id="hotelLocation" placeholder="Location (e.g., Delhi)" class="p-2 border rounded w-full" required>
+            <input type="date" id="checkInDate" class="p-2 border rounded w-full" required>
+            <input type="date" id="checkOutDate" class="p-2 border rounded w-full" required>
+            <button type="submit" class="bg-red-500 text-white p-2 rounded hover:bg-red-600">Search Hotels</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <h2 class="text-2xl font-bold mt-8 mb-4">Available Hotels</h2>
+    <div id="hotelList" class="space-y-4">
+      <!-- Hotel results will be dynamically added here -->
+    </div>
+  </section>
+
+  <!-- Login Section -->
+  <section id="login" class="container mx-auto py-16 hidden">
+    <div class="auth-form">
+      <h2 class="text-2xl font-bold mb-6 text-center">Login to BusTicket</h2>
+      <form id="loginForm">
+        <div class="mb-4">
+          <label for="email" class="block text-gray-700">Email</label>
+          <input type="email" id="email" placeholder="Enter your email" class="auth-input email-input" value="manaspathi07@gmail.com" required>
+        </div>
+        <div class="mb-4">
+          <label for="password" class="block text-gray-700">Password</label>
+          <input type="password" id="password" placeholder="Enter your password" class="auth-input" required>
+        </div>
+        <button type="submit" class="auth-button">Login</button>
+      </form>
+      <p class="mt-4 text-center text-gray-600">Don't have an account? <a href="#" class="text-red-500 hover:underline" onclick="showSection('signup')">Sign Up</a></p>
+    </div>
+  </section>
+
+  <!-- Sign Up Section -->
+  <section id="signup" class="container mx-auto py-16 hidden">
+    <div class="auth-form">
+      <h2 class="text-2xl font-bold mb-6 text-center">Sign Up for BusTicket</h2>
+      <form id="signupForm">
+        <div class="mb-4">
+          <label for="signupEmail" class="block text-gray-700">Email</label>
+          <input type="email" id="signupEmail" placeholder="Enter your email" class="auth-input email-input" required>
+        </div>
+        <div class="mb-4">
+          <label for="signupPassword" class="block text-gray-700">Password</label>
+          <input type="password" id="signupPassword" placeholder="Enter your password" class="auth-input" required>
+        </div>
+        <div class="mb-4">
+          <label for="confirmPassword" class="block text-gray-700">Confirm Password</label>
+          <input type="password" id="confirmPassword" placeholder="Confirm your password" class="auth-input" required>
+        </div>
+        <button type="submit" class="auth-button">Sign Up</button>
+      </form>
+      <p class="mt-4 text-center text-gray-600">Already have an account? <a href="#" class="text-red-500 hover:underline" onclick="showSection('login')">Login</a></p>
+    </div>
+  </section>
+
+  <!-- Seat Selection Modal -->
+  <div id="seatModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white p-6 rounded-lg max-w-lg w-full">
+      <h2 class="text-xl font-bold mb-4">Select Your Seats</h2>
+      <div id="seatMap" class="grid grid-cols-5 gap-2">
+        <!-- Seat map will be dynamically generated -->
+      </div>
+      <p class="mt-4">Selected Seats: <span id="selectedSeats">None</span></p>
+      <p class="mt-2">Total Fare: ₹<span id="totalFare">0</span></p>
+      <div class="mt-6 flex justify-end space-x-4">
+        <button class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" onclick="closeSeatModal()">Cancel</button>
+        <button class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600" onclick="confirmBooking()">Confirm Booking</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-white p-4">
+    <div class="container mx-auto text-center">
+      <p>© 2025 BusTicket. All rights reserved.</p>
+      <div class="mt-2">
+        <a href="#" class="mx-2"><i class="fab fa-facebook"></i></a>
+        <a href="#" class="mx-2"><i class="fab fa-twitter"></i></a>
+        <a href="#" class="mx-2"><i class="fab fa-instagram"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Updated sample bus data
+    const mockBuses = [
+      { id: 1, operator: "Comfort Travels", type: "AC Sleeper", departure: "18:30", arrival: "23:00", fare: 800, seats: 12 },
+      { id: 2, operator: "Star Bus", type: "Non-AC Seater", departure: "19:00", arrival: "23:30", fare: 500, seats: 20 },
+      { id: 3, operator: "Royal Coach", type: "AC Seater", departure: "17:45", arrival: "22:15", fare: 650, seats: 15 },
+      { id: 4, operator: "Green Line", type: "Sleeper", departure: "20:00", arrival: "01:00", fare: 900, seats: 8 },
+      { id: 5, operator: "City Express", type: "Non-AC Semi-Sleeper", departure: "18:15", arrival: "22:45", fare: 450, seats: 25 },
+    ];
+
+    // Sample hotel data
+    const mockHotels = [
+      { id: 1, name: "Hotel Grand Luxe", location: "Delhi", price: 4500, rooms: 10 },
+      { id: 2, name: "City Inn", location: "Mumbai", price: 3200, rooms: 15 },
+      { id: 3, name: "Royal Stay", location: "Bangalore", price: 3800, rooms: 8 },
+    ];
+
+    // Sample seat layout (20 seats, 5 booked)
+    const seatLayout = Array(20).fill('available').map((status, index) => ({
+      id: index + 1,
+      status: index < 5 ? 'booked' : 'available'
+    }));
+
+    let selectedSeats = [];
+    let currentBus = null;
+
+    // Show/hide sections
+    function showSection(sectionId) {
+      document.querySelectorAll('section').forEach(section => section.classList.add('hidden'));
+      document.getElementById(sectionId).classList.remove('hidden');
+      document.getElementById('seatModal').classList.add('hidden');
+    }
+
+    // Handle booking form submission
+    document.getElementById("bookingForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const source = document.getElementById("source").value;
+      const destination = document.getElementById("destination").value;
+      const travelDate = document.getElementById("travelDate").value;
+
+      // Show results section
+      document.getElementById("busResults").classList.remove("hidden");
+      showSection('busResults');
+
+      // Display mock bus results
+      const busList = document.getElementById("busList");
+      busList.innerHTML = "";
+      mockBuses.forEach(bus => {
+        const busCard = `
+          <div class="bus-card flex justify-between items-center">
+            <div>
+              <h3 class="text-lg font-bold">${bus.operator}</h3>
+              <p class="text-gray-600">${bus.type}</p>
+              <p class="text-gray-600">Dep: ${bus.departure} | Arr: ${bus.arrival}</p>
+            </div>
+            <div class="text-right">
+              <p class="text-lg font-bold">₹${bus.fare}</p>
+              <p class="text-gray-600">${bus.seats} seats left</p>
+              <button class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600" onclick="openSeatModal(${bus.id})">Book Now</button>
+            </div>
+          </div>
+        `;
+        busList.innerHTML += busCard;
+      });
+    });
+
+    // Handle hotel form submission
+    document.getElementById("hotelForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const location = document.getElementById("hotelLocation").value;
+      const checkInDate = document.getElementById("checkInDate").value;
+      const checkOutDate = document.getElementById("checkOutDate").value;
+
+      // Show hotel results
+      document.getElementById("hotelList").innerHTML = "";
+      mockHotels.forEach(hotel => {
+        const hotelCard = `
+          <div class="hotel-card flex justify-between items-center">
+            <div>
+              <h3 class="text-lg font-bold">${hotel.name}</h3>
+              <p class="text-gray-600">Location: ${hotel.location}</p>
+            </div>
+            <div class="text-right">
+              <p class="text-lg font-bold">₹${hotel.price}</p>
+              <p class="text-gray-600">${hotel.rooms} rooms left</p>
+              <button class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600" onclick="bookHotel(${hotel.id})">Book Now</button>
+            </div>
+          </div>
+        `;
+        document.getElementById("hotelList").innerHTML += hotelCard;
+      });
+    });
+
+    // Handle login form submission
+    document.getElementById("loginForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      alert(`Logging in with email: ${email}`);
+      showSection('home');
+    });
+
+    // Handle signup form submission
+    document.getElementById("signupForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const email = document.getElementById("signupEmail").value;
+      const password = document.getElementById("signupPassword").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+      if (password !== confirmPassword) {
+        alert("Passwords do not match!");
+        return;
+      }
+      alert(`Sign up successful with email: ${email}. Please login.`);
+      showSection('login');
+    });
+
+    // Open seat selection modal
+    function openSeatModal(busId) {
+      currentBus = mockBuses.find(bus => bus.id === busId);
+      selectedSeats = [];
+      const seatMap = document.getElementById("seatMap");
+      seatMap.innerHTML = "";
+      seatLayout.forEach(seat => {
+        const seatDiv = document.createElement("div");
+        seatDiv.className = `seat ${seat.status}`;
+        seatDiv.textContent = seat.id;
+        if (seat.status === 'available') {
+          seatDiv.onclick = () => toggleSeat(seat.id);
+        }
+        seatMap.appendChild(seatDiv);
+      });
+      updateSeatSummary();
+      document.getElementById("seatModal").classList.remove("hidden");
+    }
+
+    // Toggle seat selection
+    function toggleSeat(seatId) {
+      const index = selectedSeats.indexOf(seatId);
+      if (index === -1) {
+        selectedSeats.push(seatId);
+      } else {
+        selectedSeats.splice(index, 1);
+      }
+      const seatDivs = document.querySelectorAll("#seatMap .seat");
+      seatDivs.forEach(div => {
+        const id = parseInt(div.textContent);
+        if (selectedSeats.includes(id)) {
+          div.classList.add("selected");
+        } else if (div.classList.contains("available")) {
+          div.classList.remove("selected");
+        }
+      });
+      updateSeatSummary();
+    }
+
+    // Update seat summary
+    function updateSeatSummary() {
+      document.getElementById("selectedSeats").textContent = selectedSeats.length ? selectedSeats.join(", ") : "None";
+      document.getElementById("totalFare").textContent = selectedSeats.length * currentBus.fare;
+    }
+
+    // Close seat modal
+    function closeSeatModal() {
+      document.getElementById("seatModal").classList.add("hidden");
+    }
+
+    // Confirm booking
+    function confirmBooking() {
+      if (selectedSeats.length === 0) {
+        alert("Please select at least one seat.");
+        return;
+      }
+      alert(`Booking confirmed for bus ${currentBus.operator} with seats: ${selectedSeats.join(", ")}. Total: ₹${selectedSeats.length * currentBus.fare}`);
+      closeSeatModal();
+      showSection('home');
+    }
+
+    // Book hotel function
+    function bookHotel(hotelId) {
+      const hotel = mockHotels.find(h => h.id === hotelId);
+      alert(`Booking confirmed for ${hotel.name} at ₹${hotel.price}.`);
+      showSection('home');
+    }
+  </script>
+</body>
+</html>
